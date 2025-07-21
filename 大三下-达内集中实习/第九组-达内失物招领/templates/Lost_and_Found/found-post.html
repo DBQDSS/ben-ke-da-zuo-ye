@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布拾物信息 - 达内失物招领</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b',
+                        accent: '#f97316',
+                        neutral: '#f1f5f9',
+                        dark: '#0f172a',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .form-input-focus {
+                @apply focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-error {
+                @apply border-red-500 focus:ring-red-200 focus:border-red-500;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary font-medium py-2 px-4 rounded-lg shadow-sm hover:bg-primary/5 transition-all duration-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="flex items-center">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary">达内失物招领</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">首页</a>
+                    <!-- 添加失物列表图标 -->
+                    <a href="/Lost_and_Found/lost-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-frown-o mr-1"></i>失物列表
+                    </a>
+                    <!-- 添加拾物列表图标 -->
+                    <a href="/Lost_and_Found/found-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-smile-o mr-1"></i>拾物列表
+                    </a>
+                    <!-- 添加智能匹配图标 -->
+                    <a href="/Lost_and_Found/item-search" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-search-plus mr-1"></i>智能匹配
+                    </a>
+                    <!-- 添加智能客服图标 -->
+                    <a href="/Lost_and_Found/AI-qa" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-comments-o mr-1"></i>智能客服
+                    </a>
+                </nav>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href=" /Lost_and_Found/lost-post" class="btn-secondary">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                    <a href="/Lost_and_Found/notification-center" class="relative text-gray-700 hover:text-primary">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    </a>
+                    <!-- 个人中心下拉菜单 -->
+                    <div class="relative">
+                        <button id="user-menu-button" class="btn-secondary flex items-center" aria-expanded="false" aria-haspopup="true">
+                            <i class="fa fa-user mr-1"></i>个人中心
+                            <i class="fa fa-caret-down ml-1"></i>
+                        </button>
+                        <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                            <a href="/Lost_and_Found/User-Information" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">用户资料</a>
+                            <a href="/Lost_and_Found/notification-center" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">通知中心</a>
+                            <!-- 为注销账号链接添加点击事件 -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" onclick="handleLogout(event)">注销账号</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <!-- 添加失物列表图标 -->
+                <a href="/Lost_and_Found/lost-latest" class="block px-3 py-2 text-base font-medium text-primary bg-primary/5 rounded-md">
+                    <i class="fa fa-frown-o mr-2"></i>失物列表
+                </a>
+                <!-- 添加拾物列表图标 -->
+                <a href="/Lost_and_Found/found-latest" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-smile-o mr-2"></i>拾物列表
+                </a>
+                <!-- 添加智能匹配图标 -->
+                <a href="/Lost_and_Found/item-search" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-search-plus mr-2"></i>智能匹配
+                </a>
+                <!-- 添加智能客服图标 -->
+                <a href="/Lost_and_Found/AI-qa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-comments-o mr-2"></i>智能客服
+                </a>
+                <div class="pt-2 flex flex-col space-y-2">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href="/Lost_and_Found/lost-post" class="btn-secondary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800 mb-2">发布拾物信息</h1>
+                    <p class="text-gray-600">请填写以下信息，帮助失主找回物品</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8">
+                    <form id="found-item-form" class="space-y-6">
+                        <!-- 物品类型 -->
+                        <div>
+                            <label for="item-type" class="block text-sm font-medium text-gray-700 mb-1">物品类型 <span class="text-red-500">*</span></label>
+                            <select id="item-type" name="item-type" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                                <option value="">请选择物品类型</option>
+                                <option value="wallet">钱包/卡包</option>
+                                <option value="phone">手机</option>
+                                <option value="computer">电脑/平板</option>
+                                <option value="keys">钥匙</option>
+                                <option value="book">书籍/文件</option>
+                                <option value="clothing">衣物/饰品</option>
+                                <option value="bag">背包/手提包</option>
+                                <option value="electronic">电子产品</option>
+                                <option value="other">其他</option>
+                            </select>
+                            <!-- 添加其他类型的输入框 -->
+                            <div id="other-type-container" class="mt-2 hidden">
+                                <input type="text" id="other-type" name="other-type" 
+                                    placeholder="请输入具体的物品类型"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                            </div>
+                        </div>
+
+                        <!-- 物品名称 -->
+                        <div>
+                            <label for="item-name" class="block text-sm font-medium text-gray-700 mb-1">物品名称 <span class="text-red-500">*</span></label>
+                            <input type="text" id="item-name" name="item-name" required
+                                placeholder="例如：黑色钱包"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                        </div>
+
+                        <!-- 物品描述 -->
+                        <div>
+                            <label for="item-description" class="block text-sm font-medium text-gray-700 mb-1">物品特征描述 <span class="text-red-500">*</span></label>
+                            <textarea id="item-description" name="item-description" rows="4" required
+                                placeholder="请详细描述物品特征：颜色、品牌、型号、特殊标记、内部物品等"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">描述越详细，匹配成功率越高</p>
+                        </div>
+
+                        <!-- 拾到日期 -->
+                        <div>
+                            <label for="found-date" class="block text-sm font-medium text-gray-700 mb-1">拾到日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="found-date" name="found-date" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                        </div>
+
+                        <!-- 拾到地点 -->
+                        <div>
+                            <label for="found-location" class="block text-sm font-medium text-gray-700 mb-1">拾到地点 <span class="text-red-500">*</span></label>
+                            <input type="text" id="found-location" name="found-location" required
+                                placeholder="例如：教学楼B栋大厅"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                        </div>
+
+                        <!-- 拾到物品时的处理方式 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">物品存放位置 <span class="text-red-500">*</span></label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input id="storage-option-1" name="storage-option" type="radio" required
+                                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                    <label for="storage-option-1" class="ml-2 block text-sm text-gray-700">
+                                        已上交至学校失物招领处
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="storage-option-2" name="storage-option" type="radio" required
+                                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                    <label for="storage-option-2" class="ml-2 block text-sm text-gray-700">
+                                        由本人暂时保管
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="storage-option-3" name="storage-option" type="radio" required
+                                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                    <label for="storage-option-3" class="ml-2 block text-sm text-gray-700">
+                                        其他（请注明）
+                                    </label>
+                                </div>
+                                <div id="other-storage-container" class="mt-2 hidden pl-6">
+                                    <input type="text" id="other-storage" name="other-storage" 
+                                        placeholder="请描述物品存放位置"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 联系人信息 -->
+                        <div>
+                            <label for="contact-name" class="block text-sm font-medium text-gray-700 mb-1">您的姓名 <span class="text-red-500">*</span></label>
+                            <input type="text" id="contact-name" name="contact-name" required
+                                placeholder="请输入您的姓名"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                        </div>
+
+                        <div>
+                            <label for="contact-phone" class="block text-sm font-medium text-gray-700 mb-1">联系电话 <span class="text-red-500">*</span></label>
+                            <input type="tel" id="contact-phone" name="contact-phone" required
+                                placeholder="请输入您的手机号码"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm form-input-focus">
+                        </div>
+
+                        <!-- 上传图片 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">物品图片（可选）</label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                                <div class="space-y-1 text-center">
+                                    <i class="fa fa-cloud-upload text-gray-400 text-3xl mb-2"></i>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary/80">
+                                            <span>上传图片</span>
+                                            <input id="file-upload" name="file-upload" type="file" accept="image/*" class="sr-only">
+                                        </label>
+                                        <p class="pl-1">或拖放文件</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">支持 JPG, PNG, WEBP 格式，最大 5MB</p>
+                                </div>
+                            </div>
+                            <!-- 图片预览区域 -->
+                            <div id="image-preview" class="mt-4 hidden">
+                                <div class="relative">
+                                    <img id="preview-image" src="" alt="上传的物品图片" class="w-full h-auto rounded-lg border border-gray-200">
+                                    <button id="remove-image" class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors duration-200">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- AI识别结果展示区域 -->
+                            <div id="ai-recognition-result" class="mt-4 hidden">
+                                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                    <h4 class="font-medium text-blue-800 mb-2 flex items-center">
+                                        <i class="fa fa-lightbulb-o mr-2"></i>AI识别结果
+                                    </h4>
+                                    <p class="text-sm text-gray-700 mb-1"><span class="font-medium">识别内容：</span><span id="ai-features"></span></p>
+                                    <button id="use-ai-result" class="text-xs bg-primary text-white px-3 py-1 rounded hover:bg-primary/90">
+                                        使用AI识别结果填充描述
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-accent text-white font-medium py-3 px-6 rounded-lg shadow-md hover:bg-accent/90 transition-all duration-300 flex items-center justify-center">
+                                <i class="fa fa-paper-plane mr-2"></i>发布拾物信息
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 发布须知 -->
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fa fa-info-circle text-primary mr-2"></i>发布须知
+                    </h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>请确保所提供的信息真实有效，以便快速匹配到失主</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>发布成功后，系统将自动为您匹配可能的失物信息</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>当有高匹配度的失物时，我们会通过短信通知您</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-exclamation-circle text-yellow-500 mt-1 mr-2"></i>
+                            <span>请妥善保管拾到的物品，建议尽快上交至学校失物招领处</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">达内失物招领</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        利用先进的AI技术，帮助您快速找回丢失的物品，让失物与主人早日团聚。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-qq text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('Lost_and_Found_index') }}" class="text-gray-400 hover:text-white transition-colors duration-200">首页</a></li>
+                        <li><a href="/Lost_and_Found/found-post" class="text-gray-400 hover:text-white transition-colors duration-200">拾物发布</a></li>
+                        <li><a href="/Lost_and_Found/lost-post" class="text-gray-400 hover:text-white transition-colors duration-200">失物发布</a></li>
+                        <li><a href="/Lost_and_Found/notification-center" class="text-gray-400 hover:text-white transition-colors duration-200">通知中心</a></li>
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">帮助中心</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/Lost_and_Found/AI-qa" class="text-gray-400 hover:text-white transition-colors duration-200">智能客服</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">服务条款</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">西安市碑林区交大出版传媒大厦6层</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">400-996-5531</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">contact@danei.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 达内失物招领平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 滚动时导航栏样式变化
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-lg');
+                header.classList.add('bg-white/95');
+                header.classList.add('backdrop-blur-sm');
+            } else {
+                header.classList.remove('shadow-lg');
+                header.classList.remove('bg-white/95');
+                header.classList.remove('backdrop-blur-sm');
+            }
+        });
+
+        // 物品类型选择逻辑
+        document.getElementById('item-type').addEventListener('change', function() {
+            const otherTypeContainer = document.getElementById('other-type-container');
+            if (this.value === 'other') {
+                otherTypeContainer.classList.remove('hidden');
+                otherTypeContainer.querySelector('input').required = true;
+            } else {
+                otherTypeContainer.classList.add('hidden');
+                otherTypeContainer.querySelector('input').required = false;
+            }
+        });
+
+        // 物品存放位置选择逻辑
+        document.querySelectorAll('input[name="storage-option"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const otherStorageContainer = document.getElementById('other-storage-container');
+                if (this.id === 'storage-option-3') {
+                    otherStorageContainer.classList.remove('hidden');
+                    otherStorageContainer.querySelector('input').required = true;
+                } else {
+                    otherStorageContainer.classList.add('hidden');
+                    otherStorageContainer.querySelector('input').required = false;
+                }
+            });
+        });
+
+        // 注销-陈宇昂-更新-20250719
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+    
+        userMenuButton.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+    
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    
+        // 处理注销逻辑
+        function handleLogout(event) {
+            event.preventDefault();
+            
+            if (confirm('确定要注销吗？')) {
+                // 清除用户信息
+                localStorage.removeItem('token');
+                
+                // 显示成功提示
+                alert('已成功注销，即将返回首页');
+                
+                // 延迟跳转（可选）
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('Lost_and_Found_index') }}";
+                }, 1000);
+            }
+        }
+
+        // 刘锦坤-更新-20250719
+        let uploadedImageUrl = '';
+
+        // 添加图片上传处理
+      document.getElementById('file-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // 显示加载状态
+        const resultDiv = document.getElementById('ai-recognition-result');
+        resultDiv.classList.remove('hidden');
+        document.getElementById('ai-features').textContent = '识别中...';
+
+        // 调用AI识别接口
+        fetch('/api/found/image/ai', {
+            method: 'POST',
+            body: formData
+        })
+       .then(response => response.json())
+       .then(data => {
+            if (data.image_url) {
+                uploadedImageUrl = data.image_url;
+                document.getElementById('ai-features').textContent = data.ai_recognition_result.features.join(', ');
+            } else {
+                document.getElementById('ai-features').textContent = '识别失败: ' + data.error;
+            }
+        })
+       .catch(error => {
+            document.getElementById('ai-features').textContent = '网络错误，请重试';
+        });
+    });
+
+        // 移除图片
+        document.getElementById('remove-image').addEventListener('click', function() {
+            document.getElementById('file-upload').value = '';
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('preview-image').src = '';
+            document.getElementById('ai-recognition-result').classList.add('hidden');
+        });
+
+        // 使用AI结果填充描述
+        document.getElementById('use-ai-result').addEventListener('click', function() {
+            const features = document.getElementById('ai-features').textContent;
+            if (features && features !== '识别中...' && !features.includes('失败')) {
+                const descriptionInput = document.getElementById('item-description');
+                // 如果描述框为空，直接填充；否则追加
+                if (!descriptionInput.value.trim()) {
+                    descriptionInput.value = features;
+                } else {
+                    descriptionInput.value += '\n\nAI补充描述: ' + features;
+                }
+                // 滚动到描述框
+                descriptionInput.scrollIntoView({ behavior: 'smooth' });
+                descriptionInput.focus();
+            }
+        });
+
+        // 表单提交处理
+        document.getElementById('found-item-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 表单验证
+            const itemType = document.getElementById('item-type').value;
+            const itemName = document.getElementById('item-name').value;
+            const itemDescription = document.getElementById('item-description').value;
+            const foundDate = document.getElementById('found-date').value;
+            const foundLocation = document.getElementById('found-location').value;
+            const contactName = document.getElementById('contact-name').value;
+            const contactPhone = document.getElementById('contact-phone').value;
+            
+            // 重置所有错误状态
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                el.classList.remove('form-error');
+            });
+            
+            let isValid = true;
+            
+            if (!itemType) {
+                document.getElementById('item-type').classList.add('form-error');
+                isValid = false;
+            }
+            
+            if (!itemName) {
+                document.getElementById('item-name').classList.add('form-error');
+                isValid = false;
+            }
+            
+            if (!itemDescription) {
+                document.getElementById('item-description').classList.add('form-error');
+                isValid = false;
+            }
+            
+            if (!foundDate) {
+                document.getElementById('found-date').classList.add('form-error');
+                isValid = false;
+            }
+            
+            if (!foundLocation) {
+                document.getElementById('found-location').classList.add('form-error');
+                isValid = false;
+            }
+            
+            if (!contactName) {
+                document.getElementById('contact-name').classList.add('form-error');
+                isValid = false;
+            }
+            
+            // 简单的手机号验证
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!contactPhone || !phoneRegex.test(contactPhone)) {
+                document.getElementById('contact-phone').classList.add('form-error');
+                isValid = false;
+            }
+            
+            // 如果物品类型是"其他"，检查其他类型输入
+            if (itemType === 'other') {
+                const otherType = document.getElementById('other-type').value;
+                if (!otherType) {
+                    document.getElementById('other-type').classList.add('form-error');
+                    isValid = false;
+                }
+            }
+            
+            // 如果选择了"其他"存放位置，检查其他存放位置输入
+            if (document.getElementById('storage-option-3').checked) {
+                const otherStorage = document.getElementById('other-storage').value;
+                if (!otherStorage) {
+                    document.getElementById('other-storage').classList.add('form-error');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                alert('请填写所有必填字段并确保信息格式正确');
+                return;
+            }
+            
+            // 刘锦坤20250717-编写测试版本
+            // 陈宇昂20250717-加入总代码
+            // 刘锦坤-更新-20250719
+            // 表单数据提交逻辑
+            const formData = {
+                user_id: '001',  // 这里需要根据实际情况获取用户ID
+                item_type: document.getElementById('item-type').value,
+                item_name: document.getElementById('item-name').value,
+                item_description: document.getElementById('item-description').value,
+                found_date: document.getElementById('found-date').value,
+                found_location: document.getElementById('found-location').value,
+                storage_option: document.querySelector('input[name="storage-option"]:checked').value,
+                contact_name: document.getElementById('contact-name').value,
+                contact_phone: document.getElementById('contact-phone').value,
+                image_url: uploadedImageUrl
+            };
+
+            fetch('/api/found', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    // 显示提交成功提示
+                    alert('拾物信息发布成功！系统将为您自动匹配可能的失物信息。');
+                    // 跳转到首页
+                    window.location.href = "/Lost_and_Found/Lost-and-Found-index-loged";
+                }
+            })
+            .catch(error => {
+                alert('网络错误，请稍后重试。');
+            });
+
+            // const formValues = {};
+            // formData.forEach((value, key) => {
+            //     formValues[key] = value;
+            // });
+            
+            // console.log('表单数据:', formValues);
+        });
+    </script>
+</body>
+</html>
+    

@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>达内资源中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --accent-color: #0d6efd;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+        }
+        
+        /* 基础样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding-top: 70px;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem !important;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #fff !important;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            color: white !important;
+        }
+                /* 筛选按钮样式 */
+        .filter-btn {
+            border-radius: 20px;
+            padding: 5px 15px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white !important;
+            border-color: var(--primary-color);
+        }
+                /* 在样式部分添加 */
+        .d-flex.justify-content-center {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dropdown-menu .form-check {
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-menu .form-check-input {
+            margin-top: 0.25rem;
+        }
+        
+        /* 主内容区域 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            padding: 15px 25px;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        /* 资源卡片 */
+        .resource-card {
+            height: 100%;
+            border: 1px solid #e9ecef;
+        }
+        
+        .resource-card .card-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        /* 资源详情模态框样式 */
+        .resource-detail-modal .modal-content {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .resource-detail-modal .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 25px;
+            border-bottom: none;
+        }
+
+        .resource-detail-modal .modal-title {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .resource-detail-modal .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .resource-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 0 25px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        /* 上传区域 */
+        .upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            min-height: 250px;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: #e8f4ff;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #218838);
+            border: none;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--info-color), #138496);
+            border: none;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 5px 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+            background-color: #e9ecef;
+            font-size: 0.85rem;
+            color: #495057;
+        }
+        
+        /* 文件预览 */
+        .file-preview {
+            display: flex;
+            align-items: center;
+            background: #f1f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .file-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #1e88e5;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+        
+        footer h5 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        footer h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+            
+            .card-header {
+                font-size: 1.2rem;
+            }
+            
+            .upload-area {
+                padding: 25px 15px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .progress {
+            height: 10px;
+            margin-top: 10px;
+        }
+        
+        /* 预览容器样式 */
+        .preview-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin-top: 15px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow: auto;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .preview-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .preview-options button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .preview-options button:hover {
+            background: #dee2e6;
+        }
+        
+        .preview-content {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .preview-content img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .preview-content video {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 6px;
+        }
+        
+        .preview-content iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: 6px;
+        }
+        
+        .text-preview {
+            text-align: left;
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .unsupported-preview {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .unsupported-preview i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #adb5bd;
+        }
+        
+        .preview-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+        
+        .preview-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid transparent;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin-right: 5px;
+        }
+        
+        .preview-tab.active {
+            background: white;
+            border-color: #dee2e6 #dee2e6 #fff;
+            border-bottom: none;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .preview-tab-content {
+            display: none;
+        }
+        
+        .preview-tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-journal-bookmark-fill"></i>达内资源中心
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="http://127.0.0.1:5000/"> <!-- 替换为您实际的首页URL -->
+                            <i class="bi bi-house-door me-1"></i>首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#resource-management">
+                            <i class="bi bi-folder me-1"></i>资源管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#semantic-search">
+                            <i class="bi bi-search me-1"></i>语义检索
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tag-generation">
+                            <i class="bi bi-tags me-1"></i>标签生成
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-person-circle me-1"></i>个人中心
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- 欢迎横幅 -->
+        <div class="row mb-5 fade-in">
+            <div class="col-12">
+                <div class="p-5 text-center rounded-4" style="background: linear-gradient(rgba(30, 60, 114, 0.9), rgba(42, 82, 152, 0.85)), url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3') center/cover;">
+                    <h1 class="display-4 fw-bold text-white mb-3">达内资源中心</h1>
+                    <p class="lead text-white mb-4">一站式教育资源管理与智能检索平台</p>
+                    <div class="d-flex justify-content-center flex-wrap gap-3">
+                        <a href="#resource-management" class="btn btn-light btn-lg px-4 py-3 fw-bold">
+                            <i class="bi bi-cloud-upload me-2"></i>上传资源
+                        </a>
+                        <a href="#semantic-search" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold">
+                            <i class="bi bi-search me-2"></i>智能检索
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源管理模块 -->
+        <div class="card mb-5 fade-in" id="resource-management">
+            <div class="card-header bg-primary text-white">
+                <h2><i class="bi bi-folder me-2"></i>资源管理</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="bi bi-cloud-arrow-up fs-1 text-primary mb-3"></i>
+                            <p class="fs-5">拖放文件到此处或点击上传</p>
+                            <input type="file" id="fileInput" class="d-none" multiple>
+                            <button class="btn btn-primary mt-3 px-4 py-2 fw-medium" onclick="document.getElementById('fileInput').click()">
+                                <i class="bi bi-folder2-open me-2"></i>选择文件
+                            </button>
+                            <div id="filePreview" class="mt-3"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <label for="resourceTitle" class="form-label fw-medium">资源标题</label>
+                            <input type="text" class="form-control" id="resourceTitle" placeholder="请输入资源标题" required>
+                        </div>
+                        <!-- 修改资源类型下拉菜单 -->
+                        <div class="mb-4">
+                            <label for="resourceType" class="form-label fw-medium">资源类型</label>
+                            <select class="form-select py-2" id="resourceType" required>
+                                <option value="" disabled selected>请选择资源类型...</option>
+                                <option value="teaching">教学资料</option>
+                                <option value="paper">论文</option>
+                                <option value="code">代码</option>
+                                <option value="tool">工具</option>
+                                <option value="video">视频教程</option>
+                            </select>
+                            <div class="invalid-feedback">请选择资源类型</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="resourceDescription" class="form-label fw-medium">描述</label>
+                            <textarea class="form-control" id="resourceDescription" rows="3" placeholder="请输入资源描述..."></textarea>
+                        </div>
+                        <div class="progress d-none" id="uploadProgress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <button class="btn btn-success px-4 py-2 fw-medium" onclick="uploadResource()">
+                            <i class="bi bi-upload me-2"></i>上传资源
+                        </button>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                    <h4 class="fw-bold m-0"><i class="bi bi-list-check me-2"></i>资源列表</h4>
+                    <div class="d-flex">
+                        <!-- 筛选下拉菜单 -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
+                                <i class="bi bi-funnel"></i> 筛选
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                <li>
+                                    <div class="dropdown-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="teaching" id="filterTeaching" checked>
+                                            <label class="form-check-label" for="filterTeaching">
+                                                教学资料
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="paper" id="filterPaper" checked>
+                                            <label class="form-check-label" for="filterPaper">
+                                                论文
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="code" id="filterCode" checked>
+                                            <label class="form-check-label" for="filterCode">
+                                                代码
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="tool" id="filterTool" checked>
+                                            <label class="form-check-label" for="filterTool">
+                                                工具
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="video" id="filterVideo" checked>
+                                            <label class="form-check-label" for="filterVideo">
+                                                视频教程
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item text-primary" onclick="applyFilters()">
+                                        <i class="bi bi-check-circle me-2"></i>应用筛选
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- 排序下拉菜单 -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown">
+                                <i class="bi bi-sort-down"></i> 排序
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="changeSort('date')">按上传时间排序</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeSort('name')">按拼音首字母排序</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="resourceList">
+                     <!-- 示例资源卡片 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">机器学习入门指南</h5>
+                                    <span class="badge bg-primary">教学资料</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-pdf me-2 text-primary"></i>
+                                    <small class="text-muted">machine-learning-guide.pdf</small>
+                                </div>
+                                <p class="card-text text-muted small">全面的机器学习入门教程，包含基础理论和实践案例...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-05-15 · 2.4MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(1)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">Python数据分析实战</h5>
+                                    <span class="badge bg-warning text-dark">代码</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-zip me-2 text-primary"></i>
+                                    <small class="text-muted">python-data-analysis.zip</small>
+                                </div>
+                                <p class="card-text text-muted small">使用Pandas和Matplotlib进行数据分析的实战项目...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-06-22 · 1.8MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(2)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">深度学习论文合集</h5>
+                                    <span class="badge bg-success">论文</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-pdf me-2 text-primary"></i>
+                                    <small class="text-muted">deep-learning-papers.pdf</small>
+                                </div>
+                                <p class="card-text text-muted small">近年来深度学习领域的重要论文合集，包含CVPR、NeurIPS等顶会论文...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-07-10 · 5.2MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(3)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">前端开发实战教程</h5>
+                                    <span class="badge bg-info">视频教程</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-play me-2 text-primary"></i>
+                                    <small class="text-muted">frontend-development.mp4</small>
+                                </div>
+                                <p class="card-text text-muted small">HTML、CSS和JavaScript的实战开发教程，包含多个项目案例...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-08-05 · 42.5MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(4)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">数据库设计文档</h5>
+                                    <span class="badge bg-primary">教学资料</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-text me-2 text-primary"></i>
+                                    <small class="text-muted">database-design.docx</small>
+                                </div>
+                                <p class="card-text text-muted small">关系型数据库设计原理与最佳实践，包含ER图和SQL示例...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-07-28 · 1.2MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(5)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">项目需求规格说明书</h5>
+                                    <span class="badge bg-secondary">文档</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi bi-file-earmark-text me-2 text-primary"></i>
+                                    <small class="text-muted">project-specs.txt</small>
+                                </div>
+                                <p class="card-text text-muted small">大型软件项目的需求分析文档，包含功能需求和非功能需求...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">2023-08-12 · 0.8MB</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(6)">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- 添加查看更多按钮 -->
+                    <div class="text-center mt-4">
+                        <button id="loadMoreBtn" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-down-circle me-2"></i>查看更多资源
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>                     
+       
+        <!-- 语义检索模块 -->
+        <div class="card mb-5 fade-in" id="semantic-search">
+            <div class="card-header bg-success text-white">
+                <h2><i class="bi bi-search me-2"></i>语义检索</h2>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control form-control-lg" id="searchQuery" placeholder="输入自然语言查询...">
+                    <button class="btn btn-success px-4" type="button" onclick="semanticSearch()">
+                        <i class="bi bi-search me-1"></i> 智能搜索
+                    </button>
+                </div>
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-lightbulb fs-4 me-3"></i>
+                    <div>示例查询："机器学习入门教程"、"Python数据分析相关论文"、"深度学习在图像处理中的应用"</div>
+                </div>
+                
+                <div id="searchResults" class="mt-4">
+                    <!-- 搜索结果将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签自动生成模块 -->
+        <div class="card fade-in" id="tag-generation">
+            <div class="card-header bg-info text-white">
+                <h2><i class="bi bi-tags me-2"></i>标签自动生成</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label for="contentForTags" class="form-label fw-medium">输入内容自动生成标签</label>
+                    <textarea class="form-control" id="contentForTags" rows="5" 
+                              placeholder="粘贴文本内容或资源描述..."></textarea>
+                </div>
+                <button class="btn btn-info px-4 py-2 fw-medium" onclick="generateTags()">
+                    <i class="bi bi-magic me-2"></i>生成标签
+                </button>
+                
+                <div class="mt-4" id="generatedTags">
+                    <!-- 生成的标签将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <!-- 资源详情模态框 -->
+    <div class="modal fade resource-detail-modal" id="resourceModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resourceModalTitle">资源详情</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="resourceModalBody">
+                    <!-- 动态内容会在这里加载 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="bi bi-journal-bookmark-fill me-2"></i>达内资源中心</h5>
+                    <p class="text-muted mt-3">一站式教育资源管理与共享平台，为教师和学生提供高效的资源管理和智能检索服务。</p>
+                    <div class="mt-4">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-twitter fs-5"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-linkedin fs-5"></i></a>
+                        <a href="#" class="text-light"><i class="bi bi-github fs-5"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>快速链接</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none"><i class="bi bi-arrow-right me-2"></i>首页</a></li>
+                        <li class="mb-2"><a href="#resource-management" class="text-light text-decoration-none"><i class="bi bi-arrow-right me-2"></i>资源管理</a></li>
+                        <li class="mb-2"><a href="#semantic-search" class="text-light text-decoration-none"><i class="bi bi-arrow-right me-2"></i>语义检索</a></li>
+                        <li><a href="#tag-generation" class="text-light text-decoration-none"><i class="bi bi-arrow-right me-2"></i>标签生成</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>资源分类</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none"><i class="bi bi-book me-2"></i>教学资料</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none"><i class="bi bi-file-earmark-text me-2"></i>研究论文</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none"><i class="bi bi-code-square me-2"></i>代码项目</a></li>
+                        <li><a href="#" class="text-light text-decoration-none"><i class="bi bi-tools me-2"></i>实用工具</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>联系我们</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="bi bi-geo-alt me-2"></i>北京市海淀区中关村科技园</li>
+                        <li class="mb-3"><i class="bi bi-envelope me-2"></i>contact@danei-resources.com</li>
+                        <li class="mb-3"><i class="bi bi-telephone me-2"></i>400-123-4567</li>
+                        <li><i class="bi bi-clock me-2"></i>周一至周五: 9:00 - 18:00</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-0 mb-4" style="background-color: rgba(255,255,255,0.1);">
+            <p class="text-center text-muted mb-0">© 2023 达内资源中心 - 版权所有 | 京ICP备12345678号</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // 模拟资源数据
+        let resources = [
+            {
+                id: 1,
+                title: "机器学习入门指南",
+                type: "teaching",
+                description: "全面的机器学习入门教程，包含基础理论和实践案例，适合初学者系统学习。内容涵盖了监督学习、无监督学习和强化学习的主要算法，以及如何在实际项目中应用这些算法。",
+                tags: ["机器学习", "教程", "人工智能", "数据分析"],
+                uploadDate: "2023-05-15",
+                size: "2.4MB",
+                fileType: "pdf",
+                filePath: "https://example.com/files/machine-learning-guide.pdf",
+                uploader: "张教授",
+                downloadCount: 128
+            },
+            {
+                id: 2,
+                title: "Python数据分析实战",
+                type: "code",
+                description: "使用Pandas和Matplotlib进行数据分析的实战项目，包含完整代码和数据集。本资源包含三个完整的数据分析项目：销售数据分析、社交媒体情感分析和股票市场预测。",
+                tags: ["Python", "数据分析", "Pandas", "Matplotlib"],
+                uploadDate: "2023-06-22",
+                size: "1.8MB",
+                fileType: "zip",
+                filePath: "https://example.com/files/python-data-analysis.zip",
+                uploader: "李老师",
+                downloadCount: 95
+            },
+            {
+                id: 3,
+                title: "深度学习论文合集",
+                type: "paper",
+                description: "近年来深度学习领域的重要论文合集，包含CVPR、NeurIPS等顶会论文。这些论文涵盖了卷积神经网络、循环神经网络、Transformer架构等前沿技术。",
+                tags: ["深度学习", "论文", "人工智能", "神经网络"],
+                uploadDate: "2023-07-10",
+                size: "5.2MB",
+                fileType: "pdf",
+                filePath: "https://example.com/files/deep-learning-papers.pdf",
+                uploader: "王研究员",
+                downloadCount: 67
+            },
+            {
+                id: 4,
+                title: "前端开发实战教程",
+                type: "video",
+                description: "HTML、CSS和JavaScript的实战开发教程，包含多个项目案例。从基础到高级，涵盖响应式设计、CSS框架、现代JavaScript框架等核心内容。",
+                tags: ["前端开发", "HTML", "CSS", "JavaScript", "视频教程"],
+                uploadDate: "2023-08-05",
+                size: "42.5MB",
+                fileType: "mp4",
+                filePath: "https://example.com/files/frontend-development.mp4",
+                uploader: "赵工程师",
+                downloadCount: 53
+            },
+            {
+                id: 5,
+                title: "数据库设计文档",
+                type: "teaching",
+                description: "关系型数据库设计原理与最佳实践，包含ER图和SQL示例。详细讲解数据库规范化过程、索引优化策略和事务处理机制。",
+                tags: ["数据库", "SQL", "设计原理", "教学资料"],
+                uploadDate: "2023-07-28",
+                size: "1.2MB",
+                fileType: "docx",
+                filePath: "https://example.com/files/database-design.docx",
+                uploader: "钱教授",
+                downloadCount: 78
+            },
+            {
+                id: 6,
+                title: "项目需求规格说明书",
+                type: "tool",
+                description: "大型软件项目的需求分析文档，包含功能需求和非功能需求。这个文档展示了如何有效地收集、分析和记录用户需求，以及如何编写清晰、可测试的需求规格。",
+                tags: ["需求分析", "项目管理", "文档模板", "软件工程"],
+                uploadDate: "2023-08-12",
+                size: "0.8MB",
+                fileType: "txt",
+                filePath: "https://example.com/files/project-specs.txt",
+                uploader: "孙经理",
+                downloadCount: 42
+            }
+        ];
+
+        // 页面加载时获取资源列表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化文件选择事件
+            initFileEvents();
+            renderResourceList(); 
+            // 添加回车键搜索支持
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                semanticSearch();
+            }
+        });
+    });
+        
+        // 初始化文件事件
+        function initFileEvents() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    displayFilePreview(e.target.files[0]);
+                    
+                   
+                }
+            });
+            
+            // 拖放上传功能
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#0d6efd';
+                uploadArea.style.backgroundColor = '#e7f0ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#ced4da';
+                uploadArea.style.backgroundColor = '#f8fafc';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ced4da';
+                uploadArea.style.backgroundColor = '#f8fafc';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    displayFilePreview(e.dataTransfer.files[0]);
+                    fileInput.files = e.dataTransfer.files;
+                    // 新增：设置资源标题（不含扩展名）
+                    const fileName = e.dataTransfer.files[0].name;
+                    const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+                    document.getElementById('resourceTitle').value = fileNameWithoutExt;
+                }
+            });
+        }
+        
+        // 显示文件预览
+        function displayFilePreview(file) {
+            const fileName = file.name;
+            const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+            document.getElementById('resourceTitle').value = fileNameWithoutExt;
+            const filePreview = document.getElementById('filePreview');
+            const fileSize = formatFileSize(file.size);
+            
+            filePreview.innerHTML = `
+                <div class="file-preview">
+                    <i class="bi ${getFileIcon(file.name.split('.').pop())} file-icon"></i>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${fileSize}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 上传资源
+        function uploadResource() {
+            const fileInput = document.getElementById('fileInput');
+            const resourceTitle = document.getElementById('resourceTitle').value;
+            const resourceType = document.getElementById('resourceType').value;
+            const description = document.getElementById('resourceDescription').value;
+            
+            if (fileInput.files.length === 0) {
+                alert('请选择文件');
+                return;
+            }
+            
+            if (!resourceTitle.trim()) {
+                alert('请输入资源标题');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const fileSize = formatFileSize(file.size);
+            const fileType = file.name.split('.').pop();
+            
+            // 显示进度条
+            const progressBar = document.getElementById('uploadProgress');
+            progressBar.classList.remove('d-none');
+            const progressBarInner = progressBar.querySelector('.progress-bar');
+            progressBarInner.style.width = '0%';
+            
+            // 模拟上传过程
+            let progress = 0;
+            const uploadInterval = setInterval(() => {
+                progress += 5;
+                progressBarInner.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(uploadInterval);
+                    
+                    // 创建新资源对象
+                    const newResource = {
+                        id: resources.length + 1,
+                        title: resourceTitle,
+                        type: resourceType,
+                        description: description,
+                        tags: [],
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        size: fileSize,
+                        fileType: fileType,
+                        filePath: `https://example.com/files/${file.name}`,
+                        uploader: "当前用户",
+                        downloadCount: 0
+                    };
+                    
+                    // 添加到资源列表
+                    resources.unshift(newResource);
+                    
+                    // 更新UI
+                    renderResourceList();
+                    
+                    // 重置表单
+                    fileInput.value = '';
+                    document.getElementById('resourceTitle').value = '';
+                    document.getElementById('resourceDescription').value = '';
+                    document.getElementById('filePreview').innerHTML = '';
+                    progressBar.classList.add('d-none');
+                    
+                    // 显示成功消息
+                    alert('资源上传成功！');
+                }
+            }, 100);
+             renderResourceList(); 
+        }
+ // 全局变量
+let currentDisplayCount = 6;
+let currentFilters = ['teaching', 'paper', 'code', 'tool', 'video']; // 默认全选
+let currentSort = 'date'; // 默认按时间排序
+
+        // 修改筛选函数 - 不再重置显示数量
+        function applyFilters() {
+            // 保存当前滚动位置
+            const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+            currentFilters = [];
+            document.querySelectorAll('.dropdown-menu input[type="checkbox"]:checked').forEach(checkbox => {
+                currentFilters.push(checkbox.value);
+            });
+            // 仅重新渲染资源列表，不重置显示数量
+            renderResourceList();
+            // 恢复滚动位置
+            window.scrollTo(0, scrollPosition);
+        }
+
+
+                // 修改排序函数 - 不再重置显示数量
+        function changeSort(sortType) {
+            // 保存当前滚动位置
+            const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+            currentSort = sortType;
+            // 仅重新渲染资源列表，不重置显示数量
+            renderResourceList();
+            // 恢复滚动位置
+            window.scrollTo(0, scrollPosition);
+        }
+
+        // 修改渲染资源列表函数
+        function renderResourceList() {
+            const resourceList = document.getElementById('resourceList');
+            
+            // 1. 筛选资源
+            let filteredResources = resources.filter(r => currentFilters.includes(r.type));
+            
+            // 2. 排序资源
+            if (currentSort === 'date') {
+                filteredResources.sort((a, b) => 
+                    new Date(b.uploadDate) - new Date(a.uploadDate));
+            } else {
+                filteredResources.sort((a, b) => 
+                    a.title.localeCompare(b.title, 'zh-CN'));
+            }
+            
+            // 3. 分页显示 - 使用当前显示数量，不重置
+            const resourcesToShow = filteredResources.slice(0, currentDisplayCount);
+            
+            // 清空列表
+            resourceList.innerHTML = '';
+            
+            // 添加资源卡片
+            resourcesToShow.forEach(resource => {
+                const cardHtml = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card resource-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">${resource.title}</h5>
+                                    ${getTypeBadge(resource.type)}
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi ${getFileIcon(resource.fileType)} me-2 text-primary"></i>
+                                    <small class="text-muted">${getFileName(resource)}</small>
+                                </div>
+                                <p class="card-text text-muted small">${resource.description.substring(0, 60)}...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">${resource.uploadDate} · ${resource.size}</small>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resourceModal" onclick="loadResourceDetail(${resource.id})">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                resourceList.innerHTML += cardHtml;
+            });
+            
+            // 添加加载更多按钮（放在资源卡片后面）
+            resourceList.innerHTML += `
+                <div class="col-12 text-center mt-4">
+                    <button id="loadMoreBtn" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-down-circle me-2"></i>查看更多资源
+                    </button>
+                </div>
+            `;
+            
+            // 重新绑定事件
+            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                currentDisplayCount += 6;
+                renderResourceList();
+                
+                // 滚动到新加载的资源位置
+                const lastResourceCard = document.querySelector('.col-md-4:last-child');
+                if (lastResourceCard) {
+                    lastResourceCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+            
+            // 控制"查看更多"按钮的显示
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (filteredResources.length <= currentDisplayCount) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+        }
+        // 获取文件名
+        function getFileName(resource) {
+            const title = resource.title.replace(/\s+/g, '-').toLowerCase();
+            return `${title}.${resource.fileType}`;
+        }
+
+        // 获取资源类型标签
+        function getTypeBadge(type) {
+            const types = {
+                teaching: {class: 'bg-primary', text: '教学资料'},
+                paper: {class: 'bg-success', text: '论文'},
+                code: {class: 'bg-warning text-dark', text: '代码'},
+                tool: {class: 'bg-info text-dark', text: '工具'},
+                video: {class: 'bg-danger', text: '视频教程'}
+            };
+            return `<span class="badge ${types[type]?.class || 'bg-secondary'}">${types[type]?.text || '其他'}</span>`;
+        }
+
+        // 查看资源详情
+        function loadResourceDetail(id) {
+            const resource = resources.find(r => r.id === id);
+            if (!resource) return;
+            
+            document.getElementById('resourceModalTitle').textContent = resource.title;
+            
+            const modalBody = document.getElementById('resourceModalBody');
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-8 p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="file-type-badge me-3 p-2 bg-light rounded">
+                                <i class="bi ${getFileIcon(resource.fileType)} fs-4 text-primary"></i> 
+                                <span class="ms-2">${resource.fileType.toUpperCase()}文档</span>
+                            </div>
+                            ${getTypeBadge(resource.type)}
+                        </div>
+                        
+                        <h5 class="mt-4">资源描述</h5>
+                        <p>${resource.description}</p>
+                        
+                        <h5 class="mt-4">资源标签</h5>
+                        <div class="mb-4">
+                            ${resource.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>上传日期:</strong> ${resource.uploadDate}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>文件大小:</strong> ${resource.size}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>上传者:</strong> ${resource.uploader}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>下载次数:</strong> ${resource.downloadCount}次</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 bg-light p-4">
+                        <div class="card border-0 bg-white shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <i class="bi ${getFileIcon(resource.fileType)} fs-1 text-primary"></i>
+                                <h5 class="mt-3 mb-4">${resource.title}</h5>
+                                
+                                <button class="btn btn-primary w-100 mb-3" onclick="downloadResource(${resource.id})">
+                                    <i class="bi bi-download me-2"></i>下载资源
+                                </button>
+                                <button class="btn btn-outline-secondary w-100 mb-3" onclick="shareResource(${resource.id})">
+                                    <i class="bi bi-share me-2"></i>分享资源
+                                </button>
+                                <button class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-star me-2"></i>收藏资源
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-top">
+                    <h5 class="mb-3">文件预览</h5>
+                    <div class="preview-container">
+                        ${getPreviewContent(resource)}
+                    </div>
+                </div>
+            `;
+        }
+        // 修改加载更多功能
+        function loadMoreHandler() {
+            currentDisplayCount += 6;
+            renderResourceList();
+            
+            // 滚动到新加载的资源位置（而不是顶部）
+            const resourceList = document.getElementById('resourceList');
+            const lastResourceCard = resourceList.querySelector('.col-md-4:last-child');
+            if (lastResourceCard) {
+                lastResourceCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // 在页面加载时绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            initFileEvents();
+            renderResourceList();
+            
+            // 绑定加载更多事件
+            document.getElementById('loadMoreBtn').addEventListener('click', loadMoreHandler);
+        });
+
+        // 根据文件类型获取图标
+        function getFileIcon(fileType) {
+            const icons = {
+                pdf: 'bi-file-earmark-pdf',
+                doc: 'bi-file-earmark-word',
+                docx: 'bi-file-earmark-word',
+                xls: 'bi-file-earmark-excel',
+                xlsx: 'bi-file-earmark-excel',
+                ppt: 'bi-file-earmark-ppt',
+                pptx: 'bi-file-earmark-ppt',
+                zip: 'bi-file-earmark-zip',
+                rar: 'bi-file-earmark-zip',
+                jpg: 'bi-file-earmark-image',
+                jpeg: 'bi-file-earmark-image',
+                png: 'bi-file-earmark-image',
+                gif: 'bi-file-earmark-image',
+                mp4: 'bi-file-earmark-play',
+                mov: 'bi-file-earmark-play',
+                txt: 'bi-file-earmark-text',
+                js: 'bi-file-earmark-code',
+                html: 'bi-file-earmark-code',
+                css: 'bi-file-earmark-code',
+                default: 'bi-file-earmark'
+            };
+            
+            fileType = fileType.toLowerCase();
+            return icons[fileType] || icons.default;
+        }
+        function semanticSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase().trim();
+            if (!query) return;
+            
+            // 显示加载状态
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                    <p class="mt-2">正在搜索 "${query}"...</p>
+                </div>
+            `;
+            
+            // 模拟搜索延迟（实际应用中替换为真实搜索）
+            setTimeout(() => {
+                const results = searchResources(query);
+                renderSearchResults(results);
+            }, 800);
+        }
+        // 获取预览内容
+        function getPreviewContent(resource) {
+            const ext = resource.fileType.toLowerCase();
+            
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                return `
+                    <div class="preview-header">
+                        <h6>图片预览</h6>
+                        <div class="preview-options">
+                            <button title="放大"><i class="bi bi-zoom-in"></i></button>
+                            <button title="旋转"><i class="bi bi-arrow-clockwise"></i></button>
+                            <button title="下载"><i class="bi bi-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="${resource.title}">
+                    </div>
+                `;
+            } 
+            else if (ext === 'pdf') {
+                return `
+                    <div class="preview-header">
+                        <h6>PDF预览</h6>
+                        <div class="preview-options">
+                            <button title="下载"><i class="bi bi-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(resource.filePath)}"></iframe>
+                    </div>
+                `;
+            }
+            else if (ext === 'mp4' || ext === 'mov') {
+                return `
+                    <div class="preview-header">
+                        <h6>视频预览</h6>
+                        <div class="preview-options">
+                            <button title="全屏"><i class="bi bi-arrows-fullscreen"></i></button>
+                            <button title="下载"><i class="bi bi-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <video controls>
+                            <source src="${resource.filePath}" type="video/mp4">
+                            您的浏览器不支持视频标签。
+                        </video>
+                    </div>
+                `;
+            }
+            else if (ext === 'txt' || ext === 'js' || ext === 'html' || ext === 'css') {
+                return `
+                    <div class="preview-header">
+                        <h6>文本预览</h6>
+                        <div class="preview-options">
+                            <button title="复制"><i class="bi bi-clipboard"></i></button>
+                            <button title="下载"><i class="bi bi-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <div class="text-preview">
+                            ${resource.description}\n\n
+                            ${resource.title} - ${resource.uploadDate}\n
+                            上传者: ${resource.uploader}\n
+                            文件大小: ${resource.size}\n
+                            下载次数: ${resource.downloadCount}
+                        </div>
+                    </div>
+                `;
+            }
+            else {
+                return `
+                    <div class="unsupported-preview">
+                        <i class="bi bi-file-earmark-x"></i>
+                        <h5>不支持在线预览</h5>
+                        <p>此文件类型无法在浏览器中直接预览，请下载后查看</p>
+                        <button class="btn btn-primary mt-3" onclick="downloadResource(${resource.id})">
+                            <i class="bi bi-download me-2"></i>下载文件
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // 下载资源
+        function downloadResource(resourceId) {
+            const resource = resources.find(r => r.id === resourceId);
+            if (resource) {
+                alert(`开始下载: ${resource.title}`);
+                // 实际应用中: window.location.href = resource.filePath;
+            }
+        }
+        
+        // 分享资源
+        function shareResource(resourceId) {
+            const resource = resources.find(r => r.id === resourceId);
+            if (resource) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: resource.title,
+                        text: resource.description,
+                        url: window.location.href
+                    })
+                    .catch(error => console.log('分享失败:', error));
+                } else {
+                    alert('您的浏览器不支持分享功能，请手动复制链接分享');
+                }
+            }
+        }
+
+        // 语义搜索
+        function semanticSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase().trim();
+            if (!query) {
+                alert('请输入搜索内容');
+                return;
+            }
+            
+            // 执行搜索
+            const results = searchResources(query);
+            
+            // 显示结果
+            renderSearchResults(results);
+            saveSearchHistory(query);
+        }
+
+        function saveSearchHistory(query) {
+            let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            if (!history.includes(query)) {
+                history.unshift(query);
+                history = history.slice(0, 5); // 只保留最近5条
+                localStorage.setItem('searchHistory', JSON.stringify(history));
+            }
+        }
+
+
+        // 资源搜索函数
+        function searchResources(query) {
+            return resources.filter(resource => {
+                // 在标题、描述和标签中搜索
+                const inTitle = resource.title.toLowerCase().includes(query);
+                const inDesc = resource.description.toLowerCase().includes(query);
+                const inTags = resource.tags.some(tag => tag.toLowerCase().includes(query));
+                
+                return inTitle || inDesc || inTags;
+            });
+        }
+
+        // 渲染搜索结果
+        function renderSearchResults(results) {
+            const container = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-circle me-2"></i>没有找到匹配的资源
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `<div class="row">`;
+            
+            results.forEach(resource => {
+                const typeBadge = getTypeBadge(resource.type);
+                const fileIcon = getFileIcon(resource.fileType);
+                
+                html += `
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">${resource.title}</h5>
+                                    ${typeBadge}
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mb-2">
+                                    <i class="bi ${fileIcon} me-2 text-primary"></i>
+                                    <small class="text-muted">${getFileName(resource)}</small>
+                                </div>
+                                <p class="card-text">${resource.description.substring(0, 120)}...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">${resource.uploadDate} · ${resource.size}</small>
+                                    <button class="btn btn-sm btn-outline-success" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#resourceModal" 
+                                            onclick="loadResourceDetail(${resource.id})">
+                                        <i class="bi bi-eye me-1"></i>查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // 生成标签
+        function generateTags() {
+            const content = document.getElementById('contentForTags').value;
+            if (!content.trim()) {
+                alert('请输入内容');
+                return;
+            }
+            
+            // 调用后端AI标签生成接口
+            fetch('/api/generate-tags', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API原始响应:', data);
+                const generatedTags = document.getElementById('generatedTags');
+                
+                // 修改后的标签处理逻辑
+                let tags = [];
+                if (data.choices?.[0]?.message?.content) {  // 兼容OpenAI格式
+                    tags = data.choices[0].message.content.split(',').map(t => t.trim());
+                } else if (Array.isArray(data.tags)) {  // 兼容直接返回数组
+                    tags = data.tags;
+                }
+
+                if (tags.length === 0) {
+                    console.log('未生成标签原因:', data);
+                    generatedTags.innerHTML = '<div class="alert alert-warning">未生成任何标签，请尝试提供更详细的内容</div>';
+                    return;
+                }
+                generatedTags.innerHTML = `
+                    <div class="alert alert-success">已生成以下标签：</div>
+                    <div class="d-flex flex-wrap">
+                        ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('标签生成失败:', error);
+                document.getElementById('generatedTags').innerHTML = 
+                    '<div class="alert alert-danger">标签生成失败，请检查网络连接或联系管理员</div>';
+            });
+        }
+    </script>
+
+</body>
+</html>

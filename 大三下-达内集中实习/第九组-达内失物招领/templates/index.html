@@ -1,0 +1,43 @@
+﻿<!--继续base.html这个模板的内容，也就是菜单栏部分-->
+{% extends "base.html" %}
+<!--将index页面内容用占位符包括起来，就会添加到base.html中占位符的位置。-->
+{% block content1 %}
+	<img src="static/img/banner.png" alt="Banner" class="banner">
+    <div class="main-title">认识达内从这里开始</div>
+    <div class="content">
+        <div class="video">
+            <iframe src="https://player.youku.com/embed/XNDY1MDg2OTA0NA==?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="text">
+            <p class="highlight-text">每年十万人选择的培训 自然是好培训</p>
+            <p><img src="static/img/对号.png" alt="对号">达内教育成立于2002年9月，是面向IT互联网行业，培训培养软件开发工程师、测试工程师、智能硬件工程师、UI设计师、网络营销师等职场人才的教育机构。</p>
+            <p><img src="static/img/对号.png" alt="对号">目前，达内教育已在北京、上海、广州、深圳、南京等41座大中城市建立300家线下学习中心，覆盖3-33岁全年龄段用户，为其提供全周期、系统化的人才培养服务。</p>
+            <p><img src="static/img/对号.png" alt="对号">与1200多所高校建立应用型人才培养的合作，为20万家企业输送人才，累计服务120万+职业人才。</p>
+        </div>
+    </div>
+    <div class="container stats">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 stat">
+                <img src="static/img/学习中心.png" alt="学习中心">
+                <div class="number">61</div>
+                <div class="label">学习中心</div>
+            </div>
+            <div class="col-md-3 col-sm-6 stat">
+                <img src="static/img/覆盖城市.png" alt="覆盖城市">
+                <div class="number">41</div>
+                <div class="label">覆盖城市</div>
+            </div>
+            <div class="col-md-3 col-sm-6 stat">
+                <img src="static/img/毕业学员.png" alt="毕业学员">
+                <div class="number">120万+</div>
+                <div class="label">毕业学员</div>
+            </div>
+            <div class="col-md-3 col-sm-6 stat">
+                <img src="static/img/达内员工.png" alt="达内员工">
+                <div class="number">1万+</div>
+                <div class="label">达内员工</div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content1 %}

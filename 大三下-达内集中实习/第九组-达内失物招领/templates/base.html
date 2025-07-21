@@ -1,0 +1,193 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <!--重点1：引入2个css样式表-->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style_3.css">
+    <title>达内产学研用一体化平台</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .main-title {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .highlight-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: blue;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .content .video,
+        .content .text {
+            flex: 1;
+            margin: 10px;
+        }
+
+        .content .video iframe {
+            width: 100%;
+            height: 300px;
+        }
+
+        .content .text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stats .stat {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .stats .stat img {
+            width: 100px;
+            height: auto;
+        }
+
+        .stats .stat .number {
+            color: blue;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .stats .stat .label {
+            color: black;
+            font-size: 16px;
+        }
+
+        .menu {
+            list-style-type: none;
+            /* 移除默认列表样式 */
+            margin: 0;
+            padding: 0;
+        }
+
+        .menu li {
+            float: left;
+            /* 使列表项并排显示 */
+            margin-right: 30px;
+            /* 添加右边距以创建列表项之间的间隔 */
+        }
+
+        .menu li a {
+            text-decoration: none;
+            /* 移除下划线 */
+            color: #000;
+            /* 设置文本颜色 */
+            font-size: 20px;
+            /* 设置字号大小 */
+            padding: 5px 10px;
+            /* 添加内边距使链接看起来更好 */
+        }
+
+        .menu li a:hover {
+            background-color: #f0f0f0;
+            /* 鼠标悬停时的背景颜色 */
+        }
+    </style>
+</head>
+
+<body>
+	<div class="navbar justify-content-between navbar-expand-md bg-info">
+		<h1><img class="logo" src="static/img/logo.png" alt="IT培训" /></h1>
+		<a class="navbar-brand text-white a-margin" href="{{url_for('index')}}"
+			style="color: white !important; font-size: 40px !important;">欢迎来到达内产学研用一体化平台</a>
+		<div style="color: red !important; font-size: 20px !important;">
+  美国上市公司，专注IT培训21年
+  <div style="font-size: 18px; font-style: italic;">
+    客服电话：400-111-8989
+  </div>
+</div>
+		<ul class="navbar-nav navbar-right">
+			{% if user_now %}
+				<li class="nav-item li-margin active">
+					<a class="nav-link text-white" href="{{url_for('personal', username=user_now.username)}}">个人中心</a>
+				</li>
+				<li class="nav-item li-margin active">
+					<a class="nav-link text-white" href="{{url_for('logout')}}">退出登录</a>
+				</li>
+				<p>用户名：{{ user_now.username }}</p>
+			{% else %}
+            
+<li class="nav-item li-margin active">
+  <a class="nav-link text-white" style="font-size: 20px" href="{{url_for('login')}}">登录</a>
+</li>
+
+<li class="nav-item li-margin">
+  <a class="nav-link text-white" style="font-size: 20px" href="{{url_for('register')}}">注册</a>
+</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="navbar justify-content-between navbar-expand-md bg-info nav-text-20px" ></div>
+    <div class="container">
+        <ul class="menu">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('index', username=user_now.username) }}">首页</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="courseDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    达内课程
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="researchDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    达内失物招领
+                </a>
+                <div class="dropdown-menu" aria-labelledby="researchDropdown">
+                    <a class="dropdown-item" href="{{ url_for('Lost_and_Found_index') }}">首页</a>
+                </div>
+            </li>
+        </ul>
+        <div style="clear: both;"></div>
+    </div>
+    <div class="container" style="margin-top:5px;">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger">{{message}}</div>
+        {% endfor %}
+        <!--重点3：{% block content %}和{% endblock %}是网页内容占位符，后面我们在其他页面文件中用这两个占位符包裹起来的部分，就会显示在这里-->
+        <div> {% block content1 %} {% endblock content1 %} </div>
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

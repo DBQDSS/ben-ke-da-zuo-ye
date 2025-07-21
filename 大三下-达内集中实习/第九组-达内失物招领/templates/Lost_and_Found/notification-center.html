@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知中心 - 达内失物招领</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b',
+                        accent: '#f97316',
+                        neutral: '#f1f5f9',
+                        dark: '#0f172a',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .notification-unread {
+                @apply bg-blue-50 border-l-4 border-primary;
+            }
+            .notification-read {
+                @apply bg-white border-l-4 border-transparent;
+            }
+            .form-input-focus {
+                @apply focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .form-error {
+                @apply border-red-500 focus:ring-red-200 focus:border-red-500;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary font-medium py-2 px-4 rounded-lg shadow-sm hover:bg-primary/5 transition-all duration-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="flex items-center">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary">达内失物招领</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">首页</a>
+                    <!-- 添加失物列表图标 -->
+                    <a href="/Lost_and_Found/lost-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-frown-o mr-1"></i>失物列表
+                    </a>
+                    <!-- 添加拾物列表图标 -->
+                    <a href="/Lost_and_Found/found-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-smile-o mr-1"></i>拾物列表
+                    </a>
+                    <!-- 添加智能匹配图标 -->
+                    <a href="/Lost_and_Found/item-search" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-search-plus mr-1"></i>智能匹配
+                    </a>
+                    <!-- 添加智能客服图标 -->
+                    <a href="/Lost_and_Found/AI-qa" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-comments-o mr-1"></i>智能客服
+                    </a>
+                </nav>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href=" /Lost_and_Found/lost-post" class="btn-secondary">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                    <a href="/Lost_and_Found/notification-center" class="relative text-gray-700 hover:text-primary">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    </a>
+                    <!-- 个人中心下拉菜单 -->
+                    <div class="relative">
+                        <button id="user-menu-button" class="btn-secondary flex items-center" aria-expanded="false" aria-haspopup="true">
+                            <i class="fa fa-user mr-1"></i>个人中心
+                            <i class="fa fa-caret-down ml-1"></i>
+                        </button>
+                        <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                            <a href="/Lost_and_Found/User-Information" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">用户资料</a>
+                            <a href="/Lost_and_Found/notification-center" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">通知中心</a>
+                            <!-- 为注销账号链接添加点击事件 -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" onclick="handleLogout(event)">注销账号</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <!-- 添加失物列表图标 -->
+                <a href="/Lost_and_Found/lost-latest" class="block px-3 py-2 text-base font-medium text-primary bg-primary/5 rounded-md">
+                    <i class="fa fa-frown-o mr-2"></i>失物列表
+                </a>
+                <!-- 添加拾物列表图标 -->
+                <a href="/Lost_and_Found/found-latest" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-smile-o mr-2"></i>拾物列表
+                </a>
+                <!-- 添加智能匹配图标 -->
+                <a href="/Lost_and_Found/item-search" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-search-plus mr-2"></i>智能匹配
+                </a>
+                <!-- 添加智能客服图标 -->
+                <a href="/Lost_and_Found/AI-qa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-comments-o mr-2"></i>智能客服
+                </a>
+                <div class="pt-2 flex flex-col space-y-2">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href=" /Lost_and_Found/lost-post" class="btn-secondary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800 mb-2">通知中心</h1>
+                    <p class="text-gray-600">查看系统为您匹配的失物和拾物信息</p>
+                </div>
+
+                <!-- 通知筛选 -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-white rounded-lg shadow-sm p-4">
+                    <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+                        <button class="notification-filter-btn px-4 py-2 rounded-lg bg-primary text-white" data-filter="all">
+                            全部通知
+                        </button>
+                        <button class="notification-filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-filter="unread">
+                            未读通知 <span class="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">3</span>
+                        </button>
+                        <button class="notification-filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-filter="read">
+                            已读通知
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">标记为：</span>
+                        <button id="mark-all-read" class="text-primary hover:text-primary/80">
+                            全部已读
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 通知列表 -->
+                <div class="space-y-4" id="notification-list">
+                    <!-- 通知项1 (未读) -->
+                    <div class="notification-item notification-unread rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fa fa-exclamation-circle text-primary text-xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900">高匹配度提醒</h3>
+                                        <span class="text-xs text-gray-500">2小时前</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        您发布的丢失物品 <strong>黑色钱包</strong> 与一个拾到物品匹配度达到 <span class="text-green-600 font-medium">87%</span>
+                                    </p>
+                                    <div class="mt-3 flex items-center space-x-2">
+                                        <button onclick="window.location.href='/Lost_and_Found/static-item-detail'" class="px-3 py-1.5 text-xs bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            查看详情
+                                        </button>
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            忽略
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                      <!-- 通知项2 (未读) -->
+                    <div class="notification-item notification-unread rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fa fa-exclamation-circle text-primary text-xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900">新匹配结果</h3>
+                                        <span class="text-xs text-gray-500">5小时前</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        您发布的丢失物品 <strong>苹果手机</strong> 与一个拾到物品匹配度达到 <span class="text-green-600 font-medium">79%</span>
+                                    </p>
+                                    <div class="mt-3 flex items-center space-x-2">
+                                        <button class="px-3 py-1.5 text-xs bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            查看详情
+                                        </button>
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            忽略
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 通知项3 (未读) -->
+                    <div class="notification-item notification-unread rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fa fa-exclamation-circle text-primary text-xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900">匹配成功</h3>
+                                        <span class="text-xs text-gray-500">昨天</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        您发布的拾到物品 <strong>校园卡</strong> 已成功匹配到失主，请及时联系
+                                    </p>
+                                    <div class="mt-3 flex items-center space-x-2">
+                                        <button class="px-3 py-1.5 text-xs bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            联系失主
+                                        </button>
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            标记为已处理
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 通知项4 (已读) -->
+                    <div class="notification-item notification-read rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="fa fa-info-circle text-gray-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900">系统通知</h3>
+                                        <span class="text-xs text-gray-500">3天前</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        您的失物信息 <strong>蓝色书包</strong> 已成功发布，系统将持续为您匹配可能的拾物信息
+                                    </p>
+                                    <div class="mt-3 flex items-center space-x-2">
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            查看详情
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 通知项5 (已读) -->
+                    <div class="notification-item notification-read rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="fa fa-info-circle text-gray-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900">低匹配度提醒</h3>
+                                        <span class="text-xs text-gray-500">1周前</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        您发布的丢失物品 <strong>白色耳机</strong> 目前匹配度最高为 <span class="text-yellow-600 font-medium">42%</span>，建议补充更多特征描述
+                                    </p>
+                                    <div class="mt-3 flex items-center space-x-2">
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            编辑信息
+                                        </button>
+                                        <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                            忽略
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 没有更多通知 -->
+                <div class="mt-8 text-center text-gray-500">
+                    <p>没有更多通知</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">达内失物招领</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        利用先进的AI技术，帮助您快速找回丢失的物品，让失物与主人早日团聚。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-qq text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('Lost_and_Found_index') }}" class="text-gray-400 hover:text-white transition-colors duration-200">首页</a></li>
+                        <li><a href="/Lost_and_Found/found-post" class="text-gray-400 hover:text-white transition-colors duration-200">拾物发布</a></li>
+                        <li><a href="/Lost_and_Found/lost-post" class="text-gray-400 hover:text-white transition-colors duration-200">失物发布</a></li>
+                        <li><a href="/Lost_and_Found/notification-center" class="text-gray-400 hover:text-white transition-colors duration-200">通知中心</a></li>
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">帮助中心</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/Lost_and_Found/AI-qa" class="text-gray-400 hover:text-white transition-colors duration-200">智能客服</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">服务条款</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">西安市碑林区交大出版传媒大厦6层</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">400-996-5531</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">contact@danei.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 达内失物招领平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 注销-陈宇昂-更新-20250719
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+    
+        userMenuButton.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+    
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    
+        // 处理注销逻辑
+        function handleLogout(event) {
+            event.preventDefault();
+            
+            if (confirm('确定要注销吗？')) {
+                // 清除用户信息
+                localStorage.removeItem('token');
+                
+                // 显示成功提示
+                alert('已成功注销，即将返回首页');
+                
+                // 延迟跳转（可选）
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('Lost_and_Found_index') }}";
+                }, 1000);
+            }
+        }
+        
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 滚动时导航栏样式变化
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-lg');
+                header.classList.add('bg-white/95');
+                header.classList.add('backdrop-blur-sm');
+            } else {
+                header.classList.remove('shadow-lg');
+                header.classList.remove('bg-white/95');
+                header.classList.remove('backdrop-blur-sm');
+            }
+        });
+
+        // 通知筛选功能
+        document.querySelectorAll('.notification-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的激活状态
+                document.querySelectorAll('.notification-filter-btn').forEach(b => {
+                    b.className = 'notification-filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200';
+                });
+                
+                // 添加当前按钮的激活状态
+                this.className = 'notification-filter-btn px-4 py-2 rounded-lg bg-primary text-white';
+                
+                // 获取筛选类型
+                const filterType = this.getAttribute('data-filter');
+                
+                // 筛选通知
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    if (filterType === 'all') {
+                        item.style.display = 'block';
+                    } else if (filterType === 'unread' && item.classList.contains('notification-unread')) {
+                        item.style.display = 'block';
+                    } else if (filterType === 'read' && item.classList.contains('notification-read')) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 标记所有为已读
+        document.getElementById('mark-all-read').addEventListener('click', function() {
+            document.querySelectorAll('.notification-unread').forEach(item => {
+                item.classList.remove('notification-unread');
+                item.classList.add('notification-read');
+                item.querySelector('.flex-shrink-0').className = 'flex-shrink-0 h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center';
+                item.querySelector('.fa-exclamation-circle').className = 'fa fa-info-circle text-gray-500 text-xl';
+            });
+            
+            // 更新未读计数
+            const unreadBadge = document.querySelector('.fa-bell + span');
+            if (unreadBadge) {
+                unreadBadge.remove();
+            }
+            
+            alert('所有通知已标记为已读');
+        });
+
+        // 通知点击事件
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 如果点击的是按钮，不处理
+                if (e.target.closest('button')) {
+                    return;
+                }
+                
+                // 将未读通知标记为已读
+                if (this.classList.contains('notification-unread')) {
+                    this.classList.remove('notification-unread');
+                    this.classList.add('notification-read');
+                    this.querySelector('.flex-shrink-0').className = 'flex-shrink-0 h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center';
+                    this.querySelector('.fa-exclamation-circle').className = 'fa fa-info-circle text-gray-500 text-xl';
+                    
+                    // 更新未读计数
+                    updateUnreadCount();
+                }
+                
+                // 在实际应用中，这里会打开通知详情
+                alert('查看通知详情');
+            });
+        });
+
+        // 更新未读计数
+        function updateUnreadCount() {
+            const unreadCount = document.querySelectorAll('.notification-unread').length;
+            const badge = document.querySelector('.fa-bell + span');
+            
+            if (unreadCount > 0) {
+                if (badge) {
+                    badge.textContent = unreadCount;
+                } else {
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center';
+                    newBadge.textContent = unreadCount;
+                    document.querySelector('.fa-bell').after(newBadge);
+                }
+            } else if (badge) {
+                badge.remove();
+            }
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化通知计数
+            updateUnreadCount();
+        });
+    </script>
+</body>
+</html>

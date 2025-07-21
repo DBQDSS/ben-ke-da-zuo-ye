@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析 - 达内失物招领</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b',
+                        accent: '#f97316',
+                        neutral: '#f1f5f9',
+                        dark: '#0f172a',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary font-medium py-2 px-4 rounded-lg shadow-sm hover:bg-primary/5 transition-all duration-300;
+            }
+            .progress-bar {
+                @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+            }
+            .progress-value {
+                @apply h-full transition-all duration-500 ease-out;
+            }
+            .glow-primary {
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            }
+            .glow-accent {
+                box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="flex items-center">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary">达内失物招领</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <!-- 添加失物列表图标 -->
+                    <a href="/Lost_and_Found/lost-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-frown-o mr-1"></i>失物列表
+                    </a>
+                    <!-- 添加拾物列表图标 -->
+                    <a href="/Lost_and_Found/found-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-smile-o mr-1"></i>拾物列表
+                    </a>
+                    <!-- 添加物品审查图标 -->
+                    <a href="/Lost_and_Found/admin-review" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-search-plus mr-1"></i>物品审查
+                    </a>
+                    <!-- 添加智能客服图标 -->
+                    <a href="/Lost_and_Found/admin-analysis" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-comments-o mr-1"></i>数据分析
+                    </a>
+                </nav>
+                    </a>
+                    <div class="flex items-center space-x-2">
+                        <a href="#" class="flex items-center text-gray-700 hover:text-primary">
+                            <i class="fa fa-user-circle text-xl mr-1"></i>
+                            <span>管理员</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- 数据概览卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover glow-primary">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">总发布数</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2" id="total-posts">1,248</h3>
+                            </div>
+                            <div class="bg-blue-100 text-blue-800 p-3 rounded-lg">
+                                <i class="fa fa-file-text text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-green-500">
+                                <i class="fa fa-arrow-up mr-1"></i>
+                                <span>12.5% 较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover glow-accent">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">本月发布</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2" id="monthly-posts">156</h3>
+                            </div>
+                            <div class="bg-orange-100 text-orange-800 p-3 rounded-lg">
+                                <i class="fa fa-calendar text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-green-500">
+                                <i class="fa fa-arrow-up mr-1"></i>
+                                <span>8.3% 较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">失物发布</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2" id="lost-posts">728</h3>
+                            </div>
+                            <div class="bg-red-100 text-red-800 p-3 rounded-lg">
+                                <i class="fa fa-search text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-red-500">
+                                <i class="fa fa-arrow-down mr-1"></i>
+                                <span>5.2% 较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">拾物发布</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2" id="found-posts">520</h3>
+                            </div>
+                            <div class="bg-green-100 text-green-800 p-3 rounded-lg">
+                                <i class="fa fa-check-circle text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-green-500">
+                                <i class="fa fa-arrow-up mr-1"></i>
+                                <span>15.7% 较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第一行图表 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- 年度趋势图 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">年度发布趋势</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm bg-primary text-white rounded-lg">失物</button>
+                            <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">拾物</button>
+                        </div>
+                    </div>
+                    <div class="h-80" id="annual-trend-chart"></div>
+                </div>
+
+                <!-- 类别分布图 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">物品类别分布</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm bg-primary text-white rounded-lg">失物</button>
+                            <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">拾物</button>
+                        </div>
+                    </div>
+                    <div class="h-80" id="category-distribution-chart"></div>
+                </div>
+            </div>
+
+            <!-- 第二行图表 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- 匹配成功率 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">匹配成功率</h2>
+                    <div class="flex justify-center">
+                        <div class="relative w-64 h-64" id="matching-rate-gauge"></div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-gray-600">当前匹配成功率</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="matching-rate">68.5%</h3>
+                    </div>
+                </div>
+
+                <!-- 热门丢失地点 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">热门丢失地点</h2>
+                    <div class="h-80" id="hot-locations-chart"></div>
+                </div>
+
+                <!-- 用户活跃度 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">用户活跃度</h2>
+                    <div class="h-80" id="user-activity-chart"></div>
+                </div>
+            </div>
+
+            <!-- 第三行图表 -->
+            <div class="grid grid-cols-1 gap-6">
+                <!-- 时间分布热力图 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-hover">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">发布时段热力图</h2>
+                    <div class="h-96" id="time-heatmap-chart"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">达内失物招领</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        利用先进的AI技术，帮助您快速找回丢失的物品，让失物与主人早日团聚。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-qq text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('Lost_and_Found_index') }}" class="text-gray-400 hover:text-white transition-colors duration-200">首页</a></li>
+                        <li><a href="/Lost_and_Found/found-post" class="text-gray-400 hover:text-white transition-colors duration-200">拾物发布</a></li>
+                        <li><a href="/Lost_and_Found/lost-post" class="text-gray-400 hover:text-white transition-colors duration-200">失物发布</a></li>
+                        <li><a href="/Lost_and_Found/notification-center" class="text-gray-400 hover:text-white transition-colors duration-200">通知中心</a></li>
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">帮助中心</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/Lost_and_Found/AI-qa" class="text-gray-400 hover:text-white transition-colors duration-200">智能客服</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">服务条款</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">西安市碑林区交大出版传媒大厦6层</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">400-996-5531</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">contact@danei.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 达内失物招领平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // 初始化所有图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 年度趋势图 (使用ECharts)
+            const annualTrendChart = echarts.init(document.getElementById('annual-trend-chart'));
+            annualTrendChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['失物', '拾物']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '失物',
+                        type: 'line',
+                        smooth: true,
+                        data: [65, 58, 72, 85, 76, 68, 90, 84, 77, 83, 91, 89],
+                        itemStyle: {
+                            color: '#3b82f6'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(59, 130, 246, 0.5)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(59, 130, 246, 0.1)'
+                                }
+                            ])
+                        }
+                    },
+                    {
+                        name: '拾物',
+                        type: 'line',
+                        smooth: true,
+                        data: [45, 52, 38, 60, 48, 52, 65, 70, 63, 55, 58, 62],
+                        itemStyle: {
+                            color: '#f97316'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(249, 115, 22, 0.5)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(249, 115, 22, 0.1)'
+                                }
+                            ])
+                        }
+                    }
+                ]
+            });
+
+            // 2. 类别分布图 (使用ECharts)
+            const categoryChart = echarts.init(document.getElementById('category-distribution-chart'));
+            categoryChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    data: ['电子产品', '钱包/卡包', '钥匙', '书籍', '衣物', '其他']
+                },
+                series: [
+                    {
+                        name: '类别分布',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 320, name: '电子产品' },
+                            { value: 240, name: '钱包/卡包' },
+                            { value: 149, name: '钥匙' },
+                            { value: 100, name: '书籍' },
+                            { value: 59, name: '衣物' },
+                            { value: 120, name: '其他' }
+                        ]
+                    }
+                ]
+            });
+
+            // 3. 匹配成功率仪表盘 (使用ECharts)
+            const gaugeChart = echarts.init(document.getElementById('matching-rate-gauge'));
+            gaugeChart.setOption({
+                series: [
+                    {
+                        type: 'gauge',
+                        center: ['50%', '60%'],
+                        startAngle: 180,
+                        endAngle: 0,
+                        min: 0,
+                        max: 100,
+                        splitNumber: 10,
+                        radius: '100%',
+                        axisLine: {
+                            lineStyle: {
+                                width: 30,
+                                color: [
+                                    [0.3, '#fd666d'],
+                                    [0.7, '#37a2da'],
+                                    [1, '#67e0e3']
+                                ]
+                            }
+                        },
+                        pointer: {
+                            icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+                            length: '12%',
+                            width: 20,
+                            offsetCenter: [0, '-60%'],
+                            itemStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        axisTick: {
+                            length: 12,
+                            lineStyle: {
+                                color: 'auto',
+                                width: 2
+                            }
+                        },
+                        splitLine: {
+                            length: 20,
+                            lineStyle: {
+                                color: 'auto',
+                                width: 5
+                            }
+                        },
+                        axisLabel: {
+                            color: '#464646',
+                            fontSize: 12,
+                            distance: -60,
+                            formatter: function(value) {
+                                if (value === 100) {
+                                    return 'A';
+                                } else if (value === 80) {
+                                    return 'B';
+                                } else if (value === 60) {
+                                    return 'C';
+                                } else if (value === 40) {
+                                    return 'D';
+                                } else if (value === 20) {
+                                    return 'E';
+                                }
+                                return '';
+                            }
+                        },
+                        title: {
+                            offsetCenter: [0, '-20%'],
+                            fontSize: 20
+                        },
+                        detail: {
+                            fontSize: 30,
+                            offsetCenter: [0, '0%'],
+                            valueAnimation: true,
+                            formatter: '{value}%',
+                            color: 'inherit'
+                        },
+                        data: [
+                            {
+                                value: 68.5
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            // 4. 热门丢失地点 (使用ECharts)
+            const hotLocationsChart = echarts.init(document.getElementById('hot-locations-chart'));
+            hotLocationsChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                series: [
+                    {
+                        name: '热门地点',
+                        type: 'pie',
+                        radius: '70%',
+                        center: ['50%', '50%'],
+                        data: [
+                            { value: 1048, name: '图书馆' },
+                            { value: 735, name: '教学楼' },
+                            { value: 580, name: '食堂' },
+                            { value: 484, name: '宿舍区' },
+                            { value: 300, name: '体育场' }
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        itemStyle: {
+                            borderRadius: 5,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }
+                    }
+                ]
+            });
+
+            // 5. 用户活跃度 (使用ApexCharts)
+            const userActivityOptions = {
+                series: [{
+                    name: '活跃用户',
+                    data: [31, 40, 28, 51, 42, 109, 100, 120, 82, 91, 148, 142]
+                }],
+                chart: {
+                    height: '100%',
+                    type: 'area',
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                colors: ['#3b82f6'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.3,
+                        stops: [0, 90, 100]
+                    }
+                },
+                xaxis: {
+                    categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                },
+                tooltip: {
+                    enabled: true,
+                    x: {
+                        format: 'MMM'
+                    }
+                }
+            };
+            const userActivityChart = new ApexCharts(document.querySelector("#user-activity-chart"), userActivityOptions);
+            userActivityChart.render();
+
+            // 6. 时间分布热力图 (使用ECharts)
+            const hours = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+            const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+            const heatmapData = [];
+            for (let i = 0; i < 7; i++) {
+                for (let j = 0; j < 24; j++) {
+                    heatmapData.push([j, i, Math.round(Math.random() * 100)]);
+                }
+            }
+
+            const heatmapChart = echarts.init(document.getElementById('time-heatmap-chart'));
+            heatmapChart.setOption({
+                tooltip: {
+                    position: 'top',
+                    formatter: function (params) {
+                        return '发布数量: ' + params.value[2] + '<br>' + days[params.value[1]] + ' ' + hours[params.value[0]] + ':00';
+                    }
+                },
+                grid: {
+                    top: '10%',
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: hours,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: days,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                visualMap: {
+                    min: 0,
+                    max: 100,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '5%',
+                    inRange: {
+                        color: ['#e0f2fe', '#7dd3fc', '#38bdf8', '#0ea5e9', '#0284c7']
+                    }
+                },
+                series: [{
+                    name: '发布数量',
+                    type: 'heatmap',
+                    data: heatmapData,
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            });
+
+            // 窗口大小变化时重新调整图表大小
+            window.addEventListener('resize', function() {
+                annualTrendChart.resize();
+                categoryChart.resize();
+                gaugeChart.resize();
+                hotLocationsChart.resize();
+                heatmapChart.resize();
+            });
+        });
+
+        // 从API获取数据
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/admin/statistics');
+                const data = await response.json();
+                
+                // 更新概览卡片数据
+                document.getElementById('total-posts').textContent = data.total_posts.toLocaleString();
+                document.getElementById('monthly-posts').textContent = data.monthly_posts.toLocaleString();
+                document.getElementById('lost-posts').textContent = data.lost_posts.toLocaleString();
+                document.getElementById('found-posts').textContent = data.found_posts.toLocaleString();
+                document.getElementById('matching-rate').textContent = data.matching_rate + '%';
+                
+                // 这里可以添加更多数据更新逻辑
+                
+            } catch (error) {
+                console.error('获取数据失败:', error);
+            }
+        }
+
+        // 页面加载时获取数据
+        fetchData();
+    </script>
+</body>
+</html>

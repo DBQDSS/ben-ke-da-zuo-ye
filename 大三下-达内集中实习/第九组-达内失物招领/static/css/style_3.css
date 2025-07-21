@@ -1,0 +1,76 @@
+.consult-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.consult-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.consult-form .form-group {
+    margin-bottom: 20px;
+}
+
+.consult-form .btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.consult-form .btn:hover {
+    background-color: #0056b3;
+}
+
+.chat-box {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-question, .bot-answer {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.user-avatar, .bot-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+}
+
+.user-avatar {
+    background-color: #007bff;
+}
+
+.bot-avatar {
+    background-color: #28a745;
+}
+
+.message {
+    background-color: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+}
+
+.user-question .message {
+    background-color: #d1ecf1;
+    align-self: flex-end;
+}
+
+.bot-answer .message {
+    background-color: #f8d7da;
+    align-self: flex-start;
+}

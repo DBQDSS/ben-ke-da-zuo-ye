@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物品查找 - 达内失物招领</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b',
+                        accent: '#f97316',
+                        neutral: '#f1f5f9',
+                        dark: '#0f172a',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary font-medium py-2 px-4 rounded-lg shadow-sm hover:bg-primary/5 transition-all duration-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="flex items-center">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary">达内失物招领</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/Lost_and_Found/Lost-and-Found-index-loged" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">首页</a>
+                    <!-- 添加失物列表图标 -->
+                    <a href="/Lost_and_Found/lost-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-frown-o mr-1"></i>失物列表
+                    </a>
+                    <!-- 添加拾物列表图标 -->
+                    <a href="/Lost_and_Found/found-latest" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-smile-o mr-1"></i>拾物列表
+                    </a>
+                    <!-- 添加智能匹配图标 -->
+                    <a href="/Lost_and_Found/item-search" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-search-plus mr-1"></i>智能匹配
+                    </a>
+                    <!-- 添加智能客服图标 -->
+                    <a href="/Lost_and_Found/AI-qa" class="text-gray-700 hover:text-primary px-3 py-2 font-medium transition-colors duration-200">
+                        <i class="fa fa-comments-o mr-1"></i>智能客服
+                    </a>
+                </nav>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href=" /Lost_and_Found/lost-post" class="btn-secondary">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                    <a href="/Lost_and_Found/notification-center" class="relative text-gray-700 hover:text-primary">
+                        <i class="fa fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    </a>
+                    <!-- 个人中心下拉菜单 -->
+                    <div class="relative">
+                        <button id="user-menu-button" class="btn-secondary flex items-center" aria-expanded="false" aria-haspopup="true">
+                            <i class="fa fa-user mr-1"></i>个人中心
+                            <i class="fa fa-caret-down ml-1"></i>
+                        </button>
+                        <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                            <a href="/Lost_and_Found/User-Information" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">用户资料</a>
+                            <a href="/Lost_and_Found/notification-center" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">通知中心</a>
+                            <!-- 为注销账号链接添加点击事件 -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" onclick="handleLogout(event)">注销账号</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <!-- 添加失物列表图标 -->
+                <a href="/Lost_and_Found/lost-latest" class="block px-3 py-2 text-base font-medium text-primary bg-primary/5 rounded-md">
+                    <i class="fa fa-frown-o mr-2"></i>失物列表
+                </a>
+                <!-- 添加拾物列表图标 -->
+                <a href="/Lost_and_Found/found-latest" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-smile-o mr-2"></i>拾物列表
+                </a>
+                <!-- 添加智能匹配图标 -->
+                <a href="/Lost_and_Found/item-search" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-search-plus mr-2"></i>智能匹配
+                </a>
+                <!-- 添加智能客服图标 -->
+                <a href="/Lost_and_Found/AI-qa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md">
+                    <i class="fa fa-comments-o mr-2"></i>智能客服
+                </a>
+                <div class="pt-2 flex flex-col space-y-2">
+                    <a href="/Lost_and_Found/found-post" class="btn-primary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>拾物发布
+                    </a>
+                    <a href=" /Lost_and_Found/lost-post" class="btn-secondary text-center">
+                        <i class="fa fa-plus-circle mr-1"></i>失物发布
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 搜索区域 -->
+    <section class="bg-primary/5 py-10 border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center mb-8">
+                <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800 mb-4">物品查找</h1>
+                <p class="text-gray-600 mb-6">输入您要查找的物品名称或特征，系统将为您展示相关的失物和拾物信息</p>
+                
+                <div class="relative">
+                    <input type="text" placeholder="例如：黑色钱包、华为手机、校园卡..." value="钱包" 
+                           class="w-full pl-10 pr-4 py-3 text-lg border border-gray-300 rounded-full focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm">
+                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+                    <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white font-medium py-2 px-6 rounded-full hover:bg-primary/90 transition-all">
+                        搜索
+                    </button>
+                </div>
+                
+                <div class="mt-4 flex flex-wrap justify-center gap-2">
+                    <span class="text-sm text-gray-600 mr-1">热门搜索:</span>
+                    <a href="#" class="text-sm text-primary hover:text-primary/80 px-3 py-1 bg-primary/5 rounded-full transition-colors">钱包</a>
+                    <a href="#" class="text-sm text-primary hover:text-primary/80 px-3 py-1 bg-primary/5 rounded-full transition-colors">手机</a>
+                    <a href="#" class="text-sm text-primary hover:text-primary/80 px-3 py-1 bg-primary/5 rounded-full transition-colors">校园卡</a>
+                    <a href="#" class="text-sm text-primary hover:text-primary/80 px-3 py-1 bg-primary/5 rounded-full transition-colors">钥匙</a>
+                    <a href="#" class="text-sm text-primary hover:text-primary/80 px-3 py-1 bg-primary/5 rounded-full transition-colors">笔记本电脑</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 筛选区域 -->
+    <section class="bg-white py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-3">找到相关物品 <span class="font-medium text-primary">8</span> 个</span>
+                    
+                    <div class="flex border rounded-lg overflow-hidden">
+                        <button class="px-4 py-2 bg-primary text-white font-medium">全部</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">失物 (5)</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">拾物 (3)</button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-2">排序方式:</span>
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all appearance-none bg-white">
+                        <option value="relevance">按相关度</option>
+                        <option value="latest">最新发布</option>
+                        <option value="earliest">最早发布</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 搜索结果区域 -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 物品卡片1（丢失） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet1/800/600" alt="黑色钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            丢失物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">黑色钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">内有身份证、银行卡和少量现金，还有一张家庭照片，钱包内侧有名字缩写。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>丢失日期: 2025-07-01</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>丢失地点: 教学楼B栋</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 3天前</span>
+                            <a href="static-item-detail.html?type=lost&id=1" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物品卡片2（拾到） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet2/800/600" alt="棕色皮质钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            拾到物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">棕色皮质钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">品牌为七匹狼，内有身份证、多张银行卡和约500元现金，无照片。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>拾到日期: 2025-07-03</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>拾到地点: 食堂一楼</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 1天前</span>
+                            <a href="static-item-detail.html?type=found&id=1" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物品卡片3（丢失） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet3/800/600" alt="蓝色帆布钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            丢失物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">蓝色帆布钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">优衣库品牌，拉链款，内有学生证和公交卡，现金约200元左右。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>丢失日期: 2025-07-05</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>丢失地点: 图书馆三楼</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 5天前</span>
+                            <a href="static-item-detail.html?type=lost&id=2" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物品卡片4（拾到） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet4/800/600" alt="黑色长款钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            拾到物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">黑色长款钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">皮质长款钱包，带拉链，内有身份证（姓名：李明）、多张银行卡和现金。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>拾到日期: 2025-07-08</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>拾到地点: 实训楼大厅</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 2天前</span>
+                            <a href="static-item-detail.html?type=found&id=2" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物品卡片5（丢失） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet5/800/600" alt="红色钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            丢失物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">红色钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">短款折叠钱包，红色皮质，有金色搭扣，内有校园卡和少量现金。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>丢失日期: 2025-07-10</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>丢失地点: 体育馆</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 4天前</span>
+                            <a href="static-item-detail.html?type=lost&id=3" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物品卡片6（拾到） -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="h-48 bg-gray-200 overflow-hidden relative">
+                        <img src="https://picsum.photos/seed/wallet6/800/600" alt="灰色钱包" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            拾到物品
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">灰色钱包</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">帆布材质，灰色，内有几张银行卡和约300元现金，无身份证件。</p>
+                        
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-calendar-o w-5 text-center mr-2"></i>
+                                <span>拾到日期: 2025-07-12</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 text-sm">
+                                <i class="fa fa-map-marker w-5 text-center mr-2"></i>
+                                <span>拾到地点: 教学楼A栋楼梯间</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-sm text-gray-500">发布于 1天前</span>
+                            <a href="static-item-detail.html?type=found&id=3" class="text-primary font-medium hover:text-primary/80">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页控件 -->
+            <div class="mt-12 flex justify-center">
+                <nav class="flex items-center space-x-1">
+                    <a href="#" class="px-3 py-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a href="#" class="px-4 py-2 rounded-lg bg-primary text-white font-medium">1</a>
+                    <a href="#" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">2</a>
+                    <a href="#" class="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fa fa-search-plus text-primary text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">达内失物招领</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        利用先进的AI技术，帮助您快速找回丢失的物品，让失物与主人早日团聚。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fa fa-qq text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('Lost_and_Found_index') }}" class="text-gray-400 hover:text-white transition-colors duration-200">首页</a></li>
+                        <li><a href="/Lost_and_Found/found-post" class="text-gray-400 hover:text-white transition-colors duration-200">拾物发布</a></li>
+                        <li><a href="/Lost_and_Found/lost-post" class="text-gray-400 hover:text-white transition-colors duration-200">失物发布</a></li>
+                        <li><a href="/Lost_and_Found/notification-center" class="text-gray-400 hover:text-white transition-colors duration-200">通知中心</a></li>
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">帮助中心</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/Lost_and_Found/AI-qa" class="text-gray-400 hover:text-white transition-colors duration-200">智能客服</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">服务条款</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">西安市碑林区交大出版传媒大厦6层</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">400-996-5531</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope text-primary mt-1 mr-2"></i>
+                            <span class="text-gray-400">contact@danei.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 达内失物招领平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-white/95', 'backdrop-blur-sm');
+            } else {
+                header.classList.remove('bg-white/95', 'backdrop-blur-sm');
+            }
+        });
+
+        // 注销-陈宇昂-更新-20250719
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+    
+        userMenuButton.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+    
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    
+        // 处理注销逻辑
+        function handleLogout(event) {
+            event.preventDefault();
+            
+            if (confirm('确定要注销吗？')) {
+                // 清除用户信息
+                localStorage.removeItem('token');
+                
+                // 显示成功提示
+                alert('已成功注销，即将返回首页');
+                
+                // 延迟跳转（可选）
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('Lost_and_Found_index') }}";
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

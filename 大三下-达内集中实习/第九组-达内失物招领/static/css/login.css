@@ -1,0 +1,182 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: url(../img/bg.jpg) no-repeat fixed center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    width: 400px;
+    padding: 40px;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 10px 25px rgb(255, 255, 255);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.login-field {
+    margin-bottom: 20px;
+}
+
+.login-field span,
+.login-field label {
+    color: rgb(8, 8, 8);
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid #ffffff;
+    background: transparent;
+    color: white;
+    text-align: center;
+}
+
+input[type="submit"] {
+    background-color: #309f6bdd;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="submit"]:hover {
+    background-color: #02d170ef;
+}
+/* 其他样式保持不变 */
+
+.login-box a {
+    color: white;
+    text-decoration: none; /* 去掉下划线 */
+    font-size: 14px; /* 设置字体大小（可选） */
+}
+
+.login-box a:hover {
+    text-decoration: underline; /* 鼠标悬停时显示下划线（可选） */
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: url(../img/bg.jpg) no-repeat fixed center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.registration-box, .login-box {
+    width: 400px;
+    padding: 40px;
+    background: rgba(16, 17, 19, 0.58);
+    box-shadow: 0 10px 25px rgb(16, 17, 19);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.login-field, .form-field {
+    margin-bottom: 20px;
+}
+
+.login-field span, .login-field label, .form-field label {
+    color: white;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+input[type="text"], input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid #ffffff;
+    background: transparent;
+    color: white;
+    text-align: center;
+}
+
+input[type="submit"] {
+    background-color: #35a76cd8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="submit"]:hover {
+    background-color: #3caa58;
+}
+
+a {
+    color: white;
+    text-decoration: none; /* 去掉下划线 */
+    font-size: 14px; /* 设置字体大小 */
+}
+
+a:hover {
+    text-decoration: underline; /* 鼠标悬停时显示下划线 */
+}
+/* 动画效果 */
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in.show {
+    opacity: 1;
+}
+
+/* 其他样式保持不变 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: url(../img/bg.jpg) no-repeat fixed center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+p {
+    font-size: 18px;
+    margin: 0;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    margin: 0 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
